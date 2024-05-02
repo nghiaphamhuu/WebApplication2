@@ -1,0 +1,3 @@
+{"typeCd":"MT","typeDesc":"Mi Tom"}
+{"typeCd":"NN","typeDesc":"Nuoc Ngot"}
+{"typeCd":"CF","typeDesc":"Ca phe"}

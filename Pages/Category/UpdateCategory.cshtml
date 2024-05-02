@@ -1,0 +1,37 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Category.UpdateCategoryModel
+@{
+	Category category = new Category();
+
+	string result = "";
+
+	if (Request.Method == "GET")
+	{
+		string typeCd = Request.Query["typeCd"];
+		category = CategoryService.getCategoryDetail(typeCd);
+	}
+
+	if (Request.Method == "POST")
+	{
+		category.typeCd = Request.Form["typeCd"];
+		category.typeDesc = Request.Form["typeDesc"];
+
+		CategoryService.updateCategory(category);
+
+		Response.Redirect("/Category/Index");
+	}
+
+}
+<form method="post">
+  <label for="fname">Type Code :</label><br>
+  <input type="text" name="typeCd" value="@category.typeCd"><br>
+  <label for="lname">Type Description :</label><br>
+  <input type="text" name="typeDesc" value="@category.typeDesc"><br><br>
+  <input type="submit" value="Update">
+</form>
+
+<p>
+	@result
+</p>

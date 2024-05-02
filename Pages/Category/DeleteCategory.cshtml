@@ -1,0 +1,38 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Category.DeleteCategoryModel
+@{
+	Category category = new Category();
+
+	string result = "";
+
+	if (Request.Method == "GET")
+	{
+		string typeCd = Request.Query["typeCd"];
+
+		category = CategoryService.getCategoryDetail(typeCd);
+
+	}
+
+	if (Request.Method == "POST")
+	{
+		string typeCd = Request.Query["typeCd"];
+
+		CategoryService.deleteCategory(typeCd);
+
+		Response.Redirect("/Category/Index");
+	}
+
+}
+<form method="post">
+  <label for="fname">Name :</label><br>
+  <input type="text" name="typeCd" value="@category.typeCd" readonly><br>
+  <label for="lname">Date:</label><br>
+  <input type="text" name="typeDesc" value="@category.typeDesc" readonly><br><br>
+  <input type="submit" value="Delete">
+</form>
+
+<p>
+	@result
+</p>

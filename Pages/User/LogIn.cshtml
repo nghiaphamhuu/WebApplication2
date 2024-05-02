@@ -1,0 +1,58 @@
+﻿@page
+@model WebApplication2.Pages.User.LogInModel
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@{
+	string result = "";
+
+	if(Request.Method == "POST")
+	{
+		User user;
+
+		user.email = Request.Form["email"];
+		user.password = Request.Form["password"];
+		bool checkValid = true;
+
+		if (string.IsNullOrEmpty(user.email))
+		{
+			result = "Please Input Your Email!";
+			checkValid = false;
+		}
+
+		if (string.IsNullOrEmpty(user.password))
+		{
+			result = "Please Input Your Password";
+			checkValid = false;
+		}
+
+		if(checkValid)
+		{
+			if(Request.Method == "POST")
+			{
+				bool checkUserExist = UserService.logIn(user);
+
+				if (checkUserExist)
+				{
+					result = "Log in Success";
+					HttpContext.Session.SetString("username", user.email);
+					Response.Redirect("/Index");
+				}
+				else
+				{
+					result = "Email or Password is not correct!";
+				}
+			}
+		}
+	}
+}
+<form method="post">
+  <label for="fname">User Name:</label><br>
+  <input type="text" id="fname" name="email" value=""><br>
+  <label for="lname">Password:</label><br>
+  <input type="password" id="lname" name="password" value=""><br><br>
+  <input type="submit" value="Log In">
+</form>
+
+<p>
+	@result
+</p>

@@ -1,0 +1,71 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Invoice.DeleteInvoiceModel
+@{
+	Invoice invoice = new Invoice();
+
+	string result = "";
+
+	List<Store> stores = new List<Store>();
+
+	if (Request.Method == "GET")
+	{
+		string invoiceCode = Request.Query["invoiceCode"];
+
+		invoice = InvoiceService.getInvoiceDetail(invoiceCode);
+		stores = invoice.stores;
+
+	}
+
+
+
+	if (Request.Method == "POST")
+	{
+		string invoiceCode = Request.Query["invoiceCode"];
+
+		InvoiceService.deleteInvoice(invoiceCode, true);
+
+		Response.Redirect("/Invoice/Index");
+	}
+
+}
+<form method="post">
+  <label for="fname">Invoice Code :</label><br>
+  <input type="text" name="invoiceCode" value="@invoice.invoiceCode" readonly><br>
+  <label for="lname">Date :</label><br>
+  <input type="text" name="insertDate" value="@invoice.insertDate" readonly><br><br>
+   <div>
+		<table>
+			<tr>
+				<th>Product Id</th>
+				<th>Name Of Product</th>
+				<th>Quantity</th>
+				<th>Type</th>
+				<th>Price</th>
+				<th>Total</th>
+			</tr>
+
+			@if (stores != null && stores.Count > 0)
+			{
+				@foreach (var item in stores)
+				{
+								<tr>
+									<td>@item.productId</td>
+									<td>@item.productName</td>
+									<td>@item.quantity</td>
+									<td>@item.typeCd</td>
+									<td>@item.price</td>
+									<td>@item.total</td>
+								</tr>
+				}
+			}
+
+		</table>
+  </div>
+  <input type="submit" value="Delete">
+</form>
+
+<p>
+	@result
+</p>

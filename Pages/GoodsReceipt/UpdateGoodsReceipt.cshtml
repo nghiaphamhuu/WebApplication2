@@ -1,0 +1,89 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.GoodsReceipt.UpdateGoodsReceiptModel
+@{
+	if(!"true".Equals(Request.Query["continueSession"]))
+	{
+		HttpContext.Session.Remove("storesUpdateGoodsReceipt");
+	}
+	GoodsReceipt goodsReceipt = HttpContext.Session.GetObject<GoodsReceipt>("goodReceiptDetail");
+	string result = "";
+
+	List<Store> stores = HttpContext.Session.GetObject<List<Store>>("storesUpdateGoodsReceipt");
+
+	if (Request.Method == "GET")
+	{
+		string goodsReceiptCode = Request.Query["goodsReceiptCode"];
+		goodsReceipt = GoodsReceiptService.getGoodsReceiptDetail(goodsReceiptCode);
+		
+		if(stores ==null)
+		{
+			HttpContext.Session.SetObject<GoodsReceipt>("goodReceiptDetail", goodsReceipt);
+			HttpContext.Session.SetObject<List<Store>>("storesUpdateGoodsReceipt", goodsReceipt.stores);
+			stores = goodsReceipt.stores;
+		}
+	}
+
+	if (Request.Method == "POST")
+	{
+		goodsReceipt.goodsReceiptCode = Request.Form["goodsReceiptCode"];
+		goodsReceipt.insertDate = Request.Form["insertDate"];
+		goodsReceipt.stores = HttpContext.Session.GetObject<List<Store>>("storesUpdateGoodsReceipt");
+
+		GoodsReceiptService.updateGoodsReceipt(goodsReceipt);
+		HttpContext.Session.Remove("storesUpdateGoodsReceipt");
+		Response.Redirect("/GoodsReceipt/Index");
+	}
+
+}
+<form method="post">
+  <label for="fname">Goods Receipt Code :</label><br>
+  <input type="text" name="goodsReceiptCode" value="@goodsReceipt.goodsReceiptCode"><br>
+  <label for="lname">Date :</label><br>
+  <input type="text" name="insertDate" value="@goodsReceipt.insertDate"><br><br>
+   <div>
+		@{
+			int count = 0;
+		}
+		<table>
+			<tr>
+				<th>Row Number</th>
+				<th>Product Id</th>
+				<th>Name Of Product</th>
+				<th>Type</th>
+				<th>Quantity</th>
+				<th>Price</th>
+				<th>Total</th>
+			</tr>
+
+			@if (stores != null && stores.Count > 0)
+			{
+				@foreach (var item in stores)
+				{
+								<tr>
+									<td>@count</td>
+									<td>@item.productId</td>
+									<td>@item.productName</td>
+									<td>@item.typeCd</td>
+									<td>@item.quantity</td>
+									<td>@item.price</td>
+									<td>@item.total</td>
+									<td>
+										<a href="/GoodsReceipt/UpdateStoreDetail?row=@count&goodsReceiptCode=@goodsReceipt.goodsReceiptCode">Edit</a> 
+										<a href="/GoodsReceipt/DeleteStoreDetail?row=@count&goodsReceiptCode=@goodsReceipt.goodsReceiptCode">Delete</a> 
+									</td>
+								</tr>
+
+					count++;
+				}
+			}
+
+		</table>
+  </div>
+  <input type="submit" value="Update">
+</form>
+
+<p>
+	@result
+</p>

@@ -1,0 +1,6 @@
+{"id":1,"name":"Omachi","date":"12/12/1997","company":"tomy","dateOfProduce":"12/12/1997","type":"MT","price":12000}
+{"id":2,"name":"Ca phe trung nguyen","date":"09/09/2025","company":"tomy","dateOfProduce":"31/12/2023","type":"CF","price":7000}
+{"id":3,"name":"Mi Tom so 1 viet nam","date":"27/04/2024","company":"tomy","dateOfProduce":"31/12/2023","type":"MT","price":5000}
+{"id":4,"name":"Mi Tom so 2 viet nam","date":"01/05/2024","company":"tomy","dateOfProduce":"01/05/2024","type":"MT","price":3000}
+{"id":5,"name":"Hao hao","date":"22/05/2024","company":"TSB","dateOfProduce":"31/12/2023","type":"MT","price":7000}
+{"id":6,"name":"Hao hao","date":"22/05/2024","company":"TSB","dateOfProduce":"31/12/2023","type":"MT","price":7000}

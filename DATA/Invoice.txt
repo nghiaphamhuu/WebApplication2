@@ -1,0 +1,1 @@
+{"invoiceCode":"IV2","insertDate":"02/05/2024","stores":[{"productId":5,"productName":"Hao hao","typeCd":"MT","quantity":2,"price":7000,"total":14000}]}

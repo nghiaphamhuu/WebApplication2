@@ -1,0 +1,84 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Invoice.UpdateStoreDetailModel
+@{
+	string result = "";
+	int row = 0;
+	Store storeDetail = new Store();
+	List <Store> stores = HttpContext.Session.GetObject<List<Store>>("storesUpdateInvoice");
+
+	if(Request.Method == "GET")
+	{
+		if(!string.IsNullOrEmpty(Request.Query["row"])
+		&& int.TryParse(Request.Query["row"], out int err))
+		{
+			row = int.Parse(Request.Query["row"]);
+			storeDetail = stores[row];
+		}
+		else
+		{
+			result = "Row is InValid!!";
+		}
+	}
+
+	if(Request.Method =="POST")
+	{
+		if(!int.TryParse(Request.Form["quantity"], out int err1))
+		{
+			result = "Quantity is Invalid";
+		}
+		else
+		{
+			if (!string.IsNullOrEmpty(Request.Query["row"])
+			&& int.TryParse(Request.Query["row"], out int err))
+			{
+				int rowUpdate = int.Parse(Request.Form["row"]);
+				List<Store> newStoreUpdate = new List<Store>();
+
+				for (int i = 0; i < stores.Count; i++)
+				{
+					if (i == rowUpdate)
+					{
+						Store update = stores[i];
+						update.quantity = int.Parse(Request.Form["quantity"]);
+						newStoreUpdate.Add(update);
+						continue;
+					}
+					newStoreUpdate.Add(stores[i]);
+				}
+
+				string invoiceCode = Request.Query["invoiceCode"];
+				HttpContext.Session.SetObject<List<Store>>("storesUpdateInvoice", newStoreUpdate);
+				Response.Redirect("/Invoice/UpdateInvoice?continueSession=true&invoiceCode=" + invoiceCode);
+			}
+			else
+			{
+				result = "Row is InValid!!";
+			}
+		}
+	}
+
+
+}
+
+
+<form method="post">
+  <label for="fname">Row Number :</label><br>
+  <input type="text" name="row" value="@row" readonly><br>
+  <label for="fname">Product Id :</label><br>
+  <input type="text" name="productId" value="@storeDetail.productId" readonly><br>
+  <label for="lname">Product Name :</label><br>
+  <input type="text" name="productName" value="@storeDetail.productName" readonly><br><br>
+  <label for="lname">Type :</label><br>
+  <input type="text" name="typeCd" value="@storeDetail.typeCd" readonly><br><br>
+  <label for="lname">Quantity :</label><br>
+  <input type="text" name="quantity" value="@storeDetail.quantity"><br><br>
+  <label for="lname">Price :</label><br>
+  <input type="text" name="price" value="@storeDetail.price" readonly><br><br>
+  <input type="submit" value="Update">
+</form>
+
+<p>
+	@result
+</p>

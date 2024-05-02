@@ -1,0 +1,109 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Invoice.UpdateInvoiceModel
+@{
+	if (!"true".Equals(Request.Query["continueSession"]))
+	{
+		HttpContext.Session.Remove("storesUpdateInvoice");
+	}
+	Invoice invoice = HttpContext.Session.GetObject<Invoice>("invoiceDetail");
+	string result = "";
+
+	List<Store> stores = HttpContext.Session.GetObject<List<Store>>("storesUpdateInvoice");
+
+	if (Request.Method == "GET")
+	{
+		string invoiceCode = Request.Query["invoiceCode"];
+		invoice = InvoiceService.getInvoiceDetail(invoiceCode);
+
+		if (stores == null)
+		{
+			HttpContext.Session.SetObject<Invoice>("invoiceDetail", invoice);
+			HttpContext.Session.SetObject<List<Store>>("storesUpdateInvoice", invoice.stores);
+			stores = invoice.stores;
+		}
+	}
+
+	bool checkValid = true;
+
+	if(Request.Method == "POST")
+	{
+		invoice.invoiceCode = Request.Form["invoiceCode"];
+		invoice.insertDate = Request.Form["insertDate"];
+		invoice.stores = HttpContext.Session.GetObject<List<Store>>("storesUpdateInvoice");
+		int check = InvoiceService.checkValid(invoice);
+
+		if(check > -1)
+		{
+			result = stores[check].productName + " ,The quantity of goods in stock is not enough to ship!";
+			checkValid = false;
+		}
+	}
+
+	if (Request.Method == "POST")
+	{
+		if(checkValid)
+		{
+			invoice.invoiceCode = Request.Form["invoiceCode"];
+			invoice.insertDate = Request.Form["insertDate"];
+			invoice.stores = HttpContext.Session.GetObject<List<Store>>("storesUpdateInvoice");
+
+			InvoiceService.updateInvoice(invoice);
+			HttpContext.Session.Remove("storesUpdateInvoice");
+			Response.Redirect("/Invoice/Index");
+		}
+	}
+
+}
+<form method="post">
+  <label for="fname">Invoice Code :</label><br>
+  <input type="text" name="invoiceCode" value="@invoice.invoiceCode"><br>
+  <label for="lname">Date :</label><br>
+  <input type="text" name="insertDate" value="@invoice.insertDate"><br><br>
+   <div>
+		@{
+			int count = 0;
+		}
+		<table>
+			<tr>
+				<th>Row Number</th>
+				<th>Product Id</th>
+				<th>Name Of Product</th>
+				<th>Type</th>
+				<th>Quantity</th>
+				<th>Price</th>
+				<th>Total</th>
+			</tr>
+
+			@if (stores != null && stores.Count > 0)
+			{
+				@foreach (var item in stores)
+				{
+										<tr>
+											<td>@count</td>
+											<td>@item.productId</td>
+											<td>@item.productName</td>
+											<td>@item.typeCd</td>
+											<td>@item.quantity</td>
+											<td>@item.price</td>
+											<td>@item.total</td>
+											<td>
+												<a href="/Invoice/UpdateStoreDetail?row=@count&invoiceCode=@invoice.invoiceCode">Edit</a> 
+												<a href="/Invoice/DeleteStoreDetail?row=@count&invoiceCode=@invoice.invoiceCode">Delete</a> 
+											</td>
+										</tr>
+
+					count++;
+				}
+			}
+
+		</table>
+  </div>
+  <input type="submit" value="Update">
+</form>
+
+<p>
+	@result
+</p>
+

@@ -1,0 +1,50 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Product.UpdateProductModel;
+@{
+	Product product = new Product();
+
+	string result = "";
+
+	if(Request.Method == "GET")
+	{
+		int id = int.Parse(Request.Query["id"]);
+		product = ProductService.getProductDetail(id);
+	}
+
+	if(Request.Method == "POST")
+	{
+		product.name = Request.Form["name"];
+		product.date = Request.Form["date"];
+		product.company = Request.Form["company"];
+		product.dateOfProduce = Request.Form["dateOfProduce"];
+		product.type = Request.Form["type"];
+		product.price = int.Parse(Request.Form["price"]);
+		product.id = int.Parse(Request.Query["id"]);
+
+		ProductService.updateProduct(product);
+
+		Response.Redirect("/Product/Index");
+	}
+
+}
+<form method="post">
+  <label for="fname">Name :</label><br>
+  <input type="text" name="name" value="@product.name"><br>
+  <label for="lname">Date:</label><br>
+  <input type="text" name="date" value="@product.date"><br><br>
+  <label for="lname">Company Name:</label><br>
+  <input type="text" name="company" value="@product.company"><br><br>
+  <label for="lname">Date Of Produce:</label><br>
+  <input type="text" name="dateOfProduce" value="@product.dateOfProduce"><br><br>
+  <label for="lname">Type :</label><br>
+  <input type="text" name="type" value="@product.type"><br><br>
+  <label for="lname">Price :</label><br>
+  <input type="text" name="price" value="@product.price"><br><br>
+  <input type="submit" value="Update">
+</form>
+
+<p>
+	@result
+</p>

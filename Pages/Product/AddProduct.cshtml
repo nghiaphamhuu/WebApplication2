@@ -1,0 +1,147 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@using System.Globalization;
+@model WebApplication2.Pages.Product.AddProductModel;
+@{
+
+	string result = "";
+
+	bool checkVaild = true;
+
+	Product product = new Product();
+
+	if (Request.Method == "POST")
+	{
+		if (string.IsNullOrEmpty(Request.Form["price"]))
+		{
+			result = "Please Input Price Of Product!";
+			checkVaild = false;
+		}
+
+		if (!int.TryParse(Request.Form["price"], out int x))
+		{
+			result = "Price is InValid!!";
+			checkVaild = false;
+		}
+		else
+		{
+			if(int.Parse(Request.Form["price"]) <= 0)
+			{
+				result ="Price must be greater than 0";
+				checkVaild = false;
+			}
+		}
+
+		if (string.IsNullOrEmpty(Request.Form["name"]))
+		{
+			result = "Please Input Name Of Product!";
+			checkVaild = false;
+		}
+
+		if (string.IsNullOrEmpty(Request.Form["date"]))
+		{
+			result = "Please Input Date Of Product!";
+			checkVaild = false;
+		}
+		else
+		{
+			if (!DateTime.TryParseExact(Request.Form["date"], "dd/MM/yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime err))
+			{
+				result = "Date of Product is inValid!";
+				checkVaild = false;
+			}
+		}
+
+
+		if (string.IsNullOrEmpty(Request.Form["company"]))
+		{
+			result = "Please Input Name Of Company!";
+			checkVaild = false;
+		}
+
+		if (string.IsNullOrEmpty(Request.Form["dateOfProduce"]))
+		{
+			result = "Please Input Date Of Produce!";
+			checkVaild = false;
+		}
+		else
+		{
+			DateTime date;
+			if (!DateTime.TryParseExact(Request.Form["dateOfProduce"], "dd/MM/yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime err))
+			{
+				result = "Date Of Produce is inValid!";
+				checkVaild = false;
+			}
+		}
+
+		if (string.IsNullOrEmpty(Request.Form["type"]))
+		{
+			result = "Please Input Type Of Product!";
+			checkVaild = false;
+		}
+
+		List<Category> listCheck = CategoryService.getAllCategory();
+		bool chkCate = false;
+
+		foreach(Category cate in listCheck)
+		{
+			if(cate.typeCd.Equals(Request.Form["type"]))
+			{
+				chkCate = true;
+			}
+		}
+
+		if(!chkCate)
+		{
+			result = "This Type of Product don't contains in Category, Please add this type in category or choice a item in that!";
+			checkVaild = false;
+		}
+	}
+
+	if(checkVaild)
+	{
+		if (Request.Method == "POST")
+		{
+			product.name = Request.Form["name"];
+			product.date = DateTime.ParseExact(Request.Form["date"], "dd/MM/yyyy", CultureInfo.CurrentCulture).ToString("dd/MM/yyyy");
+			product.company = Request.Form["company"];
+			product.dateOfProduce = DateTime.ParseExact(Request.Form["dateOfProduce"], "dd/MM/yyyy", CultureInfo.CurrentCulture).ToString("dd/MM/yyyy");
+			product.type = Request.Form["type"];
+			product.price = int.Parse(Request.Form["price"]);
+
+			ProductService.addProduct(product);
+
+			result = "Add Success";
+			Response.Redirect("/Product/Index");
+		}
+	}
+	else
+	{
+		product.name = Request.Form["name"];
+		product.date = Request.Form["date"];
+		product.company = Request.Form["company"];
+		product.dateOfProduce = Request.Form["dateOfProduce"];
+		product.type = Request.Form["type"];
+		product.price = int.TryParse(Request.Form["price"],out int x) ? int.Parse(Request.Form["price"]) : 0;
+	}
+}
+<form method="post">
+  <label for="fname">Name :</label><br>
+  <input type="text" name="name" value="@product.name"><br>
+  <label for="lname">Date:</label><br>
+  <input type="text" name="date" value="@product.date"><br><br>
+  <label for="lname">Company Name:</label><br>
+  <input type="text" name="company" value="@product.company"><br><br>
+  <label for="lname">Date Of Produce:</label><br>
+  <input type="text" name="dateOfProduce" value="@product.dateOfProduce"><br><br>
+  <label for="lname">Type :</label><br>
+  <input type="text" name="type" value="@product.type"><br><br>
+  <label for="lname">Price :</label><br>
+  <input type="text" name="price" value="@product.price"><br><br>
+  <input type="submit" value="Create">
+</form>
+
+<p>
+	@result
+</p>

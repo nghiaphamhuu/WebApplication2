@@ -1,0 +1,60 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Product.IndexModel;
+@{
+    string keySearch = "";
+    string search = "";
+    List<Product> products = ProductService.getAllProduct();
+
+    if(Request.Method == "POST")
+    {
+        search = Request.Form["keySearch"];
+        products = ProductService.getProductBySearchName(search);
+    }
+}
+
+
+<h1>Products List</h1>
+<div>
+    <a href="/Product/AddProduct"> Add </a>
+ 
+    <form method="post">
+        <input type="text" name="keySearch" value="@keySearch" />
+        <input type="submit" value="Search">
+    </form>
+</div>
+@if (products != null && products.Count > 0)
+{
+    <div>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Company Name</th>
+                <th>Date Of Produce</th>
+                <th>Type</th>
+                <th>Price</th>
+            </tr>
+
+            @foreach (var item in products)
+            {
+                <tr>
+                    <td>@item.id</td>
+                    <td>@item.name</td>
+                    <td>@item.date</td>
+                    <td>@item.company</td>
+                    <td>@item.dateOfProduce</td>
+                    <td>@item.type</td>
+                    <td>@item.price</td>
+                    <td>
+                       <a href="/Product/UpdateProduct?id=@item.id">Edit</a> 
+                       <a href="/Product/DeleteProduct?id=@item.id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+

@@ -1,0 +1,181 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Invoice.AddInvoiceModel
+@{
+
+	string result = "";
+
+	bool checkVaild = true;
+
+	Invoice invoice = new Invoice();
+
+	invoice.insertDate = DateTime.Now.ToString("dd/MM/yyyy");
+
+	List<Product> products = ProductService.getAllProduct();
+
+	if(Request.Method == "GET")
+	{
+		if (!string.IsNullOrEmpty(Request.Query["selectedProductId"])
+			&& !string.IsNullOrEmpty(Request.Query["quantityForm"]))
+		{
+			if (int.TryParse(Request.Query["selectedProductId"], out int err)
+				&& int.TryParse(Request.Query["quantityForm"], out int err1))
+			{
+				int id = int.Parse(Request.Query["selectedProductId"]);
+				int quantityForm = int.Parse(Request.Query["quantityForm"]);
+				Model.addStore(id, quantityForm);
+			}
+			else
+			{
+				result = "Quantity or Id is Invalid!";
+			}
+		}
+		else
+		{
+			result = "Please Input Quantity and select product";
+		}
+	}
+
+	if(!"true".Equals(Request.Query["keepSession"]))
+	{
+		HttpContext.Session.Remove("storesInvoice");
+	}
+
+	List<Store> stores = HttpContext.Session.GetObject<List<Store>>("storesInvoice");
+
+	if (Request.Method == "POST")
+	{
+		if (string.IsNullOrEmpty(Request.Form["invoiceCode"]))
+		{
+			result = "Please Input Invoice Code!";
+			checkVaild = false;
+		}
+
+		List<Invoice> listCheck = InvoiceService.getAllInvoice();
+
+		foreach (Invoice inv in listCheck)
+		{
+			if (inv.invoiceCode.Equals(Request.Form["invoiceCode"]))
+			{
+				result = "This Goods Receipt Code is already Exist, Please Input another Goods Receipt Code!";
+				checkVaild = false;
+			}
+		}
+
+		List<Store> checkStore = StoreService.getAllStore();
+
+		foreach(Store item in stores)
+		{
+			bool chkExistStore = false;
+			bool chkQuantity = true;
+			int quantity = 0;
+			foreach (Store chk in checkStore)
+			{
+				if(chk.productId == item.productId)
+				{
+					if(chk.quantity<item.quantity)
+					{
+						chkQuantity = false;
+						quantity = chk.quantity;
+						break;
+					}
+					chkExistStore = true;
+					break;
+				}
+			}
+
+			if (!chkQuantity)
+			{
+				result = item.productName + " ,The Quantity of this Product is greater than Store(" +quantity+")";
+				checkVaild = false;
+				break;
+			}
+
+			if(!chkExistStore)
+			{
+				result = item.productName + " ,This Product is not exist in Store!!";
+				checkVaild = false;
+				break;
+			}
+		}
+	}
+
+	if(checkVaild)
+	{
+		if (Request.Method == "POST")
+		{
+			invoice.invoiceCode = Request.Form["invoiceCode"];
+			invoice.insertDate = DateTime.Now.ToString("dd/MM/yyyy");
+			invoice.stores = stores;
+
+			InvoiceService.addInvoice(invoice, true);
+
+			result = "Add Success";
+			HttpContext.Session.Remove("storesInvoice");
+			Response.Redirect("/Invoice/Index");
+		}
+	}
+	else
+	{
+		invoice.invoiceCode = Request.Form["invoiceCode"];
+		invoice.insertDate = DateTime.Now.ToString("dd/MM/yyyy");
+	}
+}
+
+<form method="get">
+	 <select name="selectedProductId">
+		@if (products != null && products.Count > 0)
+		{
+			@foreach (var item in products)
+			{
+				<option value="@item.id"> @item.name</option>
+			}
+		}
+	</select>
+	<input type="text" name="quantityForm" value="">
+	<input type="text" name="keepSession" value="true" hidden="true">
+	<input type="submit" value="Add">
+</form>
+
+<form method="post">
+  <label for="fname">Invoice Code :</label><br>
+  <input type="text" name="invoiceCode" value="@invoice.invoiceCode"><br>
+  <label for="lname">Date Of Insert :</label><br>
+  <input type="text" name="insertDate" value="@invoice.insertDate" readonly><br><br>
+   <div>
+        <table>
+            <tr>
+                <th>Product Id</th>
+                <th>Name Of Product</th>
+                <th>Quantity</th>
+				<th>Type</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+
+			@if (stores != null && stores.Count > 0)
+			{
+				@foreach (var item in stores)
+				{
+						<tr>
+							<td>@item.productId</td>
+							<td>@item.productName</td>
+							<td>@item.quantity</td>
+							<td>@item.typeCd</td>
+							<td>@item.price</td>
+							<td>@item.total</td>
+						</tr>
+				}
+			}
+			
+        </table>
+  </div>
+  <input type="submit" value="Create">
+</form>
+
+<p>
+	@result
+</p>
+
+

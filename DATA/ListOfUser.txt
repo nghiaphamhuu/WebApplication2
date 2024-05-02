@@ -1,0 +1,12 @@
+<form method="post">
+    <select name="myComboBox">
+        @if (categorys != null && categorys.Count > 0)
+        {
+            @foreach (var item in categorys)
+            {
+                <option value="@item.typeCd"> @item.typeDesc</option>
+            }
+        }
+    </select>
+    <input type="submit" value="Submit" />
+</form>

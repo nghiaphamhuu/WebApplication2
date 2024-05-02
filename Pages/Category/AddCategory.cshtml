@@ -1,0 +1,68 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Category.AddCategoryModel
+@{
+
+	string result = "";
+
+	bool checkVaild = true;
+
+	Category category = new Category();
+
+	if (Request.Method == "POST")
+	{
+		if (string.IsNullOrEmpty(Request.Form["typeCd"]))
+		{
+			result = "Please Input Type Code Of Category!";
+			checkVaild = false;
+		}
+
+		if (string.IsNullOrEmpty(Request.Form["typeDesc"]))
+		{
+			result = "Please Input Type Descriptiong Of Category!";
+			checkVaild = false;
+		}
+
+		List<Category> listCheck = CategoryService.getAllCategory();
+
+		foreach(Category cate in listCheck)
+		{
+			if(cate.typeCd.Equals(Request.Form["typeCd"]))
+			{
+				result = "This Type Code is already Exist, Please Input another Type Code!";
+				checkVaild = false;
+			}
+		}
+	}
+
+	if(checkVaild)
+	{
+		if (Request.Method == "POST")
+		{
+			category.typeCd = Request.Form["typeCd"];
+			category.typeDesc = Request.Form["typeDesc"];
+
+			CategoryService.addCategory(category);
+
+			result = "Add Success";
+			Response.Redirect("/Category/Index");
+		}
+	}
+	else
+	{
+		category.typeCd = Request.Form["typeCd"];
+		category.typeDesc = Request.Form["typeDesc"];
+	}
+}
+<form method="post">
+  <label for="fname">Type Code :</label><br>
+  <input type="text" name="typeCd" value="@category.typeCd"><br>
+  <label for="lname">Type Description :</label><br>
+  <input type="text" name="typeDesc" value="@category.typeDesc"><br><br>
+  <input type="submit" value="Create">
+</form>
+
+<p>
+	@result
+</p>

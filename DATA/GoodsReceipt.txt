@@ -1,0 +1,2 @@
+{"goodsReceiptCode":"GR1","insertDate":"02/05/2024","stores":[{"productId":1,"productName":"Omachi","typeCd":"MT","quantity":3,"price":12000,"total":36000},{"productId":2,"productName":"Ca phe trung nguyen","typeCd":"CF","quantity":7,"price":7000,"total":49000},{"productId":5,"productName":"Hao hao","typeCd":"MT","quantity":2,"price":7000,"total":14000}]}
+{"goodsReceiptCode":"GR2","insertDate":"02/05/2024","stores":[{"productId":4,"productName":"Mi Tom so 2 viet nam","typeCd":"MT","quantity":3,"price":3000,"total":9000}]}

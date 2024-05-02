@@ -1,0 +1,59 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Statistics.StoreByCategoryModel
+@{
+
+    List<Category> categorys = CategoryService.getAllCategory();
+    List<Store> stores = StoreService.getAllStore();
+
+    if(Request.Method =="POST")
+    {
+        string category = Request.Form["selectedCategory"];
+        stores = StoreService.getStoresByCategory(category);
+    }
+}
+<form method="post">
+    <select name="selectedCategory">
+        <option value=""> All</option>
+        @if (categorys != null && categorys.Count > 0)
+        {
+            @foreach (var item in categorys)
+            {
+                <option value="@item.typeCd"> @item.typeDesc</option>
+            }
+        }
+    </select>
+    <input type="submit" value="Submit" asp-page-handler="OnPost"/>
+</form>
+
+
+
+
+        <div>
+            <table>
+                <tr>
+                    <th>Product Id</th>
+                    <th>Product Name</th>
+                    <th>Type Code</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            @if (stores != null && stores.Count > 0)
+            {
+                @foreach (var item in stores)
+                {
+                    <tr>
+                        <td>@item.productId</td>
+                        <td>@item.productName</td>
+                        <td>@item.typeCd</td>
+                        <td>@item.quantity</td>
+                        <td>@item.price</td>
+                        <td>@item.total</td>
+                    </tr>
+                }
+            }
+            </table>
+        </div>
+

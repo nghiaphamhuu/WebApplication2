@@ -1,0 +1,50 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.GoodsReceipt.IndexModel
+@{
+    string keySearch = "";
+    string search = "";
+    List<GoodsReceipt> goodsReceipts = GoodsReceiptService.getAllGoodsReceipt();
+
+    if (Request.Method == "POST")
+    {
+        search = Request.Form["keySearch"];
+        goodsReceipts = GoodsReceiptService.getGoodsReceiptBySearchName(search);
+    }
+}
+
+
+<h1>Goods Receipt List</h1>
+<div>
+    <a href="/GoodsReceipt/AddGoodsReceipt"> Add </a>
+
+    <form method="post">
+        <input type="text" name="keySearch" value="@keySearch" />
+        <input type="submit" value="Search">
+    </form>
+</div>
+@if (goodsReceipts != null && goodsReceipts.Count > 0)
+{
+            <div>
+                <table>
+                    <tr>
+                        <th>Goods Receipt Code :</th>
+                        <th>Date :</th>
+                    </tr>
+
+            @foreach (var item in goodsReceipts)
+            {
+                                <tr>
+                                    <td>@item.goodsReceiptCode</td>
+                                    <td>@item.insertDate</td>
+                                    <td>
+                                        <a href="/GoodsReceipt/UpdateGoodsReceipt?goodsReceiptCode=@item.goodsReceiptCode">Edit</a> 
+                                        <a href="/GoodsReceipt/DeleteGoodsReceipt?goodsReceiptCode=@item.goodsReceiptCode">Delete</a>
+                                    </td>
+                                </tr>
+            }
+                </table>
+            </div>
+}
+

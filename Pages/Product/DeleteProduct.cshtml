@@ -1,0 +1,44 @@
+﻿@page
+@using WebApplication2.Entity;
+@using WebApplication2.Service;
+@model WebApplication2.Pages.Product.DeleteProductModel;
+@{
+	Product product = new Product();
+
+	string result = "";
+
+	if(Request.Method == "GET")
+	{
+		int id = int.Parse(Request.Query["id"]);
+		product = ProductService.getProductDetail(id);
+	}
+
+	if(Request.Method == "POST")
+	{
+		int id = int.Parse(Request.Query["id"]);
+
+		ProductService.deleteProduct(id);
+
+		Response.Redirect("/Product/Index");
+	}
+
+}
+<form method="post">
+  <label for="fname">Name :</label><br>
+  <input type="text" name="name" value="@product.name" readonly><br>
+  <label for="lname">Date:</label><br>
+  <input type="text" name="date" value="@product.date" readonly><br><br>
+  <label for="lname">Company Name:</label><br>
+  <input type="text" name="company" value="@product.company" readonly><br><br>
+  <label for="lname">Date Of Produce:</label><br>
+  <input type="text" name="dateOfProduce" value="@product.dateOfProduce" readonly><br><br>
+  <label for="lname">Type :</label><br>
+  <input type="text" name="type" value="@product.type" readonly><br><br>
+  <label for="lname">Price :</label><br>
+  <input type="text" name="price" value="@product.price" readonly><br><br>
+  <input type="submit" value="Delete">
+</form>
+
+<p>
+	@result
+</p>
